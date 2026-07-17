@@ -1,24 +1,39 @@
 class Solution {
   public:
-    bool solveviaDFS(vector<vector<int>>& adj, int u, vector<bool>& visited, int parent){
+    bool isCycleBFS(vector<vector<int>>& adj, int u, vector<bool>& visited){
         
         visited[u] = true;
         
-        for(int v : adj[u]){
+        queue<pair<int,int>> que;
+        que.push({u, -1});
+        
+        while(!que.empty()){
             
-            if (v == parent) continue;
-            if(visited[v]) return true; 
+            pair<int, int> pr = que.front();
+            que.pop();
+            
+            int curr = pr.first;
+            int parent = pr.second;
+            
+            for(int &v : adj[curr]){
                 
-            if(solveviaDFS(adj, v, visited, u)){
-                return true;
+                if(visited[v] == false){
+                    visited[v] = true;
+                    
+                    que.push({v, curr}); 
+                }
+                else if(v != parent) {
+                    return true;
+                }
             }
-                
-            
         }
+        
         return false;
+        
     }
     bool isCycle(int V, vector<vector<int>>& edges) {
         // Code here
+        vector<bool> visited(V, false);
         vector<vector<int>> adj(V);
         
         for(auto &x : edges){
@@ -30,16 +45,14 @@ class Solution {
             adj[v].push_back(u);
         }
         
-        vector<bool>visited(V,false);
-        
         for(int i = 0; i < V; i++){
-            if(!visited[i]){
-                if(solveviaDFS(adj,i,visited,-1)){
-                    return true;
-                }
+            
+            if(visited[i] == false){
+                
+                if(isCycleBFS(adj, i, visited) == true) return true;
             }
         }
         return false;
-       
+        
     }
 };
