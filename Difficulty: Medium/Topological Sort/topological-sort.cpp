@@ -1,27 +1,16 @@
 class Solution {
   public:
-    vector<int> res;
-    stack<int> st;
-    
-    void viaDFS(vector<vector<int>>& adj, int u, vector<bool>& visited){
-        
-        visited[u] = true;
-        
-        for(auto &v : adj[u]){
-            
-            if(visited[v] == false){
-                
-                viaDFS(adj, v, visited);
-            }
-        }
-        st.push(u);
-    }
     vector<int> topoSort(int V, vector<vector<int>>& edges) {
         // code here
+        vector<int> indegree(V,0);
         vector<vector<int>> adj(V);
-        vector<bool> visited(V,false);
         
-        for(auto& x : edges){
+        for(auto &p : edges){ // populate kar diya indegree ko
+            
+            indegree[p[1]]++;
+        }
+        
+        for(auto &x : edges){ // creating the adjacency list
             
             int u = x[0];
             int v = x[1];
@@ -29,25 +18,30 @@ class Solution {
             adj[u].push_back(v);
         }
         
+        queue<int> que;
         
-        for(int i = 0; i < V; i++){
+        for(int i = 0; i<V ; i++){ // pushing those nodes whose indegree are 0 initially into the queue
             
-            if(visited[i] == false){
-                
-                viaDFS(adj, i, visited);
-            }
-            
+            if(indegree[i] == 0) que.push(i);
         }
         
-        while(!st.empty()){
+        vector<int> res;
+        
+        while(!que.empty()){
             
-            res.push_back(st.top());
+            int u = que.front();
+            que.pop();
             
-            st.pop();
+            res.push_back(u);
             
+            for(auto &v : adj[u]){
+                indegree[v]--;
+                
+                if(indegree[v] == 0) que.push(v);
+                
+            }
         }
         
         return res;
-        
     }
 };
